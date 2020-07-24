@@ -4,6 +4,7 @@ import sys
 from time import ctime
 from argparse import ArgumentParser
 from collections import defaultdict
+from pdb import pm
 
 def directory_file_map(files, current_dir):
     types_pattern = '(' + '|'.join(types) + ')'
@@ -15,7 +16,7 @@ def directory_file_map(files, current_dir):
     for file in files:
         # find a way to do with pattern matching
         file_short_name = file
-        band = current_dir.split('\\')[-1]
+        band = os.path.split(current_dir)[1]
         band_prefix = band.lower() + ' - '
         if file_short_name.lower().startswith(band_prefix):
             file_short_name = file_short_name[len(band_prefix):]
@@ -43,15 +44,14 @@ def clean_subdir(current_dir, files, types, test_mode):
     for short_name, files in dir_files.items():
         candidates = None
         for file_type in types:
-            candidates = [x for x in files if x.lower().endswith('.' + file_type)]
+            candidates = [x for x in files if os.path.splitext(x)[1] == '.' + file_type]
             if candidates:
                 break
-        sorted_candidates = sorted(candidates,key=lambda x:os.stat(current_dir + '\\' + x).st_size, reverse=True)
+        sorted_candidates = sorted(candidates,key=lambda x:os.stat(os.path.join(current_dir, x)).st_size, reverse=True)
         candidate = sorted_candidates[0]
-        
-        
+
         before = candidate
-        after = short_name + '.' + candidate.split(''.')[-1].lower()
+        after = short_name + os.path.splitext(candidate)[1].lower()
         after = after.replace(band + ' - ','')
         to_del = list(set(files) - set([candidate]))
         
@@ -67,9 +67,9 @@ def clean_subdir(current_dir, files, types, test_mode):
             print(f'delete: {to_del}')
         if not test_mode:
             for file_to_del in to_del:
-                os.remove(current_dir + '\\' + file_to_del)
+                os.remove(os.path.join(current_dir,file_to_del))
             if before != after:
-                os.rename(current_dir + '\\' + before,current_dir + '\\' + after)   
+                os.rename(os.path.join(current_dir,before),os.path.join(current_dir, after)) 
     return
 
 def main(base_dir, types, test_mode):
@@ -101,4 +101,3 @@ test_mode = not args.run
 main(base_dir, types, test_mode)
 
 # to do:
-# use os.path functions
