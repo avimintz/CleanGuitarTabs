@@ -15,8 +15,8 @@ def directory_file_map(files, current_dir):
     for file in files:
         # find a way to do with pattern matching
         file_short_name = file
-        band = current_dir.split("\\")[-1]
-        band_prefix = band.lower() + " - "
+        band = current_dir.split('\\')[-1]
+        band_prefix = band.lower() + ' - '
         if file_short_name.lower().startswith(band_prefix):
             file_short_name = file_short_name[len(band_prefix):]
         file_short_name = file_short_name.replace(band + ' - ','')
@@ -46,30 +46,30 @@ def clean_subdir(current_dir, files, types, test_mode):
             candidates = [x for x in files if x.lower().endswith('.' + file_type)]
             if candidates:
                 break
-        sorted_candidates = sorted(candidates,key=lambda x:os.stat(current_dir + "\\" + x).st_size, reverse=True)
+        sorted_candidates = sorted(candidates,key=lambda x:os.stat(current_dir + '\\' + x).st_size, reverse=True)
         candidate = sorted_candidates[0]
         
         
         before = candidate
-        after = short_name + "." + candidate.split(".")[-1].lower()
-        after = after.replace(band + " - ","")
+        after = short_name + '.' + candidate.split(''.')[-1].lower()
+        after = after.replace(band + ' - ','')
         to_del = list(set(files) - set([candidate]))
         
         if not to_del and before == after:
             continue
 
         if not printed_directory:
-            print(f"Directory: {current_dir}")
+            print(f'Directory: {current_dir}')
             printed_directory = True
         if before != after:
-            print(f"move: {before} -> {after}")
+            print(f'move: {before} -> {after}')
         if to_del:
-            print(f"delete: {to_del}")
+            print(f'delete: {to_del}')
         if not test_mode:
             for file_to_del in to_del:
-                os.remove(current_dir + "\\" + file_to_del)
+                os.remove(current_dir + '\\' + file_to_del)
             if before != after:
-                os.rename(current_dir + "\\" + before,current_dir + "\\" + after)   
+                os.rename(current_dir + '\\' + before,current_dir + '\\' + after)   
     return
 
 def main(base_dir, types, test_mode):
@@ -99,3 +99,6 @@ args = get_args()
 base_dir = args.folder
 test_mode = not args.run
 main(base_dir, types, test_mode)
+
+# to do:
+# use os.path functions
